@@ -1,0 +1,83 @@
+{
+  "selectedTemplate": 1,
+  "headings": {
+    "work": "",
+    "skills": "Skills",
+    "projects": "",
+    "awards": "",
+    "education": "B tech "
+  },
+  "basics": {
+    "phone": "+123-456-789",
+    "location": {
+      "address": "San Francisco ,ca"
+    },
+    "name": "Elon Musk",
+    "email": "elonmusk@telsamotor.com",
+    "website": "https://www.linkedin.com/in/foobar"
+  },
+  "education": [
+    {
+      "institution": "public school",
+      "location": "pleasanton,ca",
+      "gpa": "3.5",
+      "studyType": "B.Sc",
+      "startDate": "Jan 2012",
+      "endDate": "April 2014"
+    }
+  ],
+  "work": [
+    {
+      "location": "Pleasanton,CA",
+      "position": "Software Engineer",
+      "website": "",
+      "highlights": [
+        ""
+      ],
+      "company": "Sloar City ",
+      "startDate": "June 2015",
+      "endDate": "Feb 2016"
+    }
+  ],
+  "skills": [
+    {
+      "name": "Python",
+      "level": "",
+      "keywords": [
+        null
+      ]
+    },
+    {
+      "keywords": [
+        ""
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "url": "",
+      "keywords": [
+        ""
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": "",
+      "date": "",
+      "awarder": "",
+      "summary": ""
+    }
+  ],
+  "sections": [
+    "templates",
+    "profile",
+    "education",
+    "work",
+    "skills",
+    "projects",
+    "awards"
+  ]
+}
