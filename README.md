@@ -6,7 +6,7 @@ This Python script automates the job application process on Greenhouse using Sel
 
 ## Features
 
-- Reads job URLs from jobs\linkedin_jobs_date_time.csv for fetching the job URL path
+- Reads job URLs from **`jobs\linkedin_jobs_date_time.csv`** for fetching the job URL path
 - Automatically fills required fields (name, email, phone, location, etc.)
 - Uploads a resume
 - Handles OTP verification for secure job applications
@@ -38,13 +38,11 @@ Ensure you have Python installed, then install the required dependencies:
 pip install -r requirements.txt
 ```
 
-### 4. ChromeDriver Setup
 
-The script uses `webdriver-manager` to automatically download and set up the Chrome WebDriver.
 
 ## Usage
 
-1. Place your job URLs in a file named `jobs.txt` (one URL per line).
+1. Place your job URLs in the file **`jobs\linkedin_jobs_date_time.csv`** (one URL per line).
 2. Customize your job application details in the `JOB_APP` dictionary inside `apply.py`.
 3. Run the script:
    ```bash
@@ -58,8 +56,12 @@ The script uses `webdriver-manager` to automatically download and set up the Chr
 ```
 GreenHouse_Bot/
 │-- apply.py         # Main script for job applications
-│-- jobs.txt         # List of Greenhouse job application URLs
-│-- resume.pdf       # Resume file to be uploaded
+│-- jobs/            # Directory containing job listings
+│   └── linkedin_jobs_date_time.csv  # CSV file with job URLs
+│-- resume/          # Directory containing resume files
+│   ├── resume.txt   # Resume text file
+│   ├── resume.pdf   # Resume PDF file
+│   ├── resume.json  # Resume JSON file
 │-- requirements.txt # Python dependencies
 │-- venv/            # Virtual environment (if created)
 │-- README.md        # Project documentation
@@ -67,7 +69,7 @@ GreenHouse_Bot/
 
 ## Notes
 
-- Ensure your resume file (`resume.pdf`) is in the project directory.
+- Ensure your resume files (`resume.txt`, `resume.pdf`, `resume.json`) are in the `resume/` directory.
 - If OTP verification is enabled, ensure you configure email credentials for fetching OTPs.
 - The script handles most fields dynamically, but some manual intervention may be required.
 - When prompted for OTP input, manually check your email and enter the code in the script to proceed.
@@ -75,3 +77,4 @@ GreenHouse_Bot/
 ---
 
 **Credits: whitebox-learning! 🚀**
+
