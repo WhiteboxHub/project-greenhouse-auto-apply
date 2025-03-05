@@ -12,7 +12,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementClickInter
 from webdriver_manager.chrome import ChromeDriverManager
 
 # Load job URLs from a text file
-def load_job_urls(filename="job_links.txt"):
+def load_job_urls(filename="jobs\linkedin_jobs_date_time.csv"):
     with open(filename, "r") as file:
         return [line.strip() for line in file.readlines() if line.strip()]
 
