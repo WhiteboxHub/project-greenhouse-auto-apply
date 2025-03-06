@@ -38,8 +38,6 @@ Ensure you have Python installed, then install the required dependencies:
 pip install -r requirements.txt
 ```
 
-
-
 ## Usage
 
 1. Place your job URLs in the file **`jobs\linkedin_jobs_date_time.csv`** (one URL per line).
@@ -77,4 +75,3 @@ GreenHouse_Bot/
 ---
 
 **Credits: whitebox-learning! 🚀**
-

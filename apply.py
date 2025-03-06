@@ -1,8 +1,8 @@
-
 # K:\GreenHouse_Bot\apply.py
 import os
 import time
 import random
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -11,10 +11,27 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Load job URLs from a text file
-def load_job_urls(filename="jobs\linkedin_jobs_date_time.csv"):
-    with open(filename, "r") as file:
-        return [line.strip() for line in file.readlines() if line.strip()]
+# Function to construct job URLs from CSV file
+def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
+    job_urls = []
+
+    # Check if file exists before reading
+    if not os.path.exists(filename):
+        print(f"❌ Error: The file '{filename}' was not found.")
+        return []
+
+    with open(filename, "r", encoding="utf-8") as file:
+        reader = csv.reader(file)
+        next(reader, None)  # Skip header row if present
+
+        for row in reader:
+            if len(row) >= 4 and row[1].strip().lower() == "greenhouse":  # Ensure correct data format and filter by platform
+                company = row[2].strip().replace(" ", "").lower()  # Format company name
+                job_id = row[3].strip()
+                job_url = f"https://boards.greenhouse.io/{company}/jobs/{job_id}"
+                job_urls.append(job_url)
+
+    return job_urls
 
 # Random sleep function
 def random_sleep(min_time=2, max_time=8):
@@ -26,7 +43,7 @@ def random_sleep(min_time=2, max_time=8):
 JOB_APP = {
     "first_name": "Foo",
     "last_name": "Bar",
-    "email": "elonmusk@gmail.com",
+    "email": "jhon@gmail.com",
     "phone": "123-456-7890",
     "resume": os.path.abspath("resume/resume.pdf"),
     "linkedin": "https://www.linkedin.com/in/foobar",
@@ -89,7 +106,6 @@ def apply_greenhouse(driver, url):
                 print(f"⚠️ {key} field not found. It might be optional.")
 
         random_sleep()
-        
 
         # Upload Resume Automatically
         try:
@@ -152,7 +168,6 @@ def apply_greenhouse(driver, url):
     except Exception as e:
         print(f"⚠️ Error while submitting: {e}")
 
-
 if __name__ == "__main__":
     job_urls = load_job_urls()
     print(f"\n✅ Found {len(job_urls)} job(s) to apply for.\n")
@@ -175,4 +190,3 @@ if __name__ == "__main__":
         random_sleep()
 
     print("✅ All applications completed!")
-
