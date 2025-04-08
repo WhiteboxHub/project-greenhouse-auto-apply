@@ -1,3 +1,5 @@
+
+
 import os
 import time
 import random
@@ -11,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, StaleElementReferenceException
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
+import datetime
 
 def load_config(filename="config/credentials.yaml"):
     if not os.path.exists(filename):
@@ -37,7 +40,6 @@ if not JOB_APP:
     print("Error: Unable to load configuration. Exiting.")
     exit(1)
 
-
 def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
     job_urls = []
 
@@ -46,7 +48,7 @@ def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
         return []
 
     with open(filename, "r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)  
+        reader = csv.DictReader(file)
 
         for row in reader:
             platform = row["platform"].strip().lower()
@@ -54,11 +56,14 @@ def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
             job_id = row["job_id"].strip()
             platform_link = row["platform_link"].strip()
 
-            job_url = None  
+            if platform != "greenhouse":
+                continue
 
-            if platform == "greenhouse" and company and job_id:
+            job_url = None
+
+            if company and job_id:
                 job_url = f"https://boards.greenhouse.io/{company}/jobs/{job_id}"
-            elif platform_link: 
+            elif platform_link:
                 job_url = platform_link
 
             if job_url:
@@ -93,6 +98,27 @@ def random_sleep(min_time=2, max_time=8):
     sleep_time = random.uniform(min_time, max_time)
     print(f"Sleeping for {round(sleep_time, 2)} seconds")
     time.sleep(sleep_time)
+
+def log_result_to_csv(filename, url, status):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(filename, mode='a', newline='', encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow([url, status, timestamp])
+
+def initialize_csv(filename):
+    with open(filename, mode='w', newline='', encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["URL", "Status", "Timestamp"])
+
+# Ensure the logs directory exists
+logs_directory = "logs"
+os.makedirs(logs_directory, exist_ok=True)
+
+# Define the path for the results file
+results_filename = os.path.join(logs_directory, "job_application_results.csv")
+
+# Initialize the CSV file with headers
+initialize_csv(results_filename)
 
 def apply_greenhouse(driver, url, qa_pairs):
     print(f"\n🔹 Applying to: {url}")
@@ -243,22 +269,25 @@ def apply_greenhouse(driver, url, qa_pairs):
 
         # Verify submission
         try:
-            # Check for URL change
             WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
             print("Application submitted successfully.")
+            log_result_to_csv(results_filename, url, "Success")
         except TimeoutException:
             try:
-                # Check for confirmation message
                 confirmation_message = driver.find_element(By.XPATH, "//*[contains(text(), 'Thank you for applying') or contains(text(), 'Application submitted')]")
                 if confirmation_message:
                     print("Application submitted successfully based on confirmation message.")
+                    log_result_to_csv(results_filename, url, "Success")
                 else:
                     print("Application submission failed. Please check the form manually.")
+                    log_result_to_csv(results_filename, url, "Failed")
             except NoSuchElementException:
                 print("Application submission failed. Please check the form manually.")
+                log_result_to_csv(results_filename, url, "Failed")
 
     except Exception as e:
         print(f"Error while submitting: {e}")
+        log_result_to_csv(results_filename, url, "Failed")
 
 if __name__ == "__main__":
     job_urls = load_job_urls()
@@ -275,9 +304,9 @@ if __name__ == "__main__":
             apply_greenhouse(driver, job_url, qa_pairs)
         except Exception as e:
             print(f"Error applying to {job_url}: {e}")
+            log_result_to_csv(results_filename, job_url, "Failed")
 
         driver.quit()
         random_sleep()
 
     print("All applications completed!")
-
