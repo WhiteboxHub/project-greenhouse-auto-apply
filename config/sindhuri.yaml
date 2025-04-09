@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "sindhuri"
+  last_name: "Siddireddy "
+  email: "sindhuri.siddireddy@gmail.com"
+  phone: "203-824-1798"
+  resume: "resume/resume.pdf"  # Relative path
+  linkedin: "https://www.linkedin.com/in/sindhurisiddireddy/"
+  location: "pleasanton, CA, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+

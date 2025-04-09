@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "Narsimlu"
+  last_name: "Alli "
+  email: "narasi.mymail@gmail.com"
+  phone: "469-514-1494"
+  resume: "resume/resume.pdf"  # Relative path
+  linkedin: "https://www.linkedin.com/in/narasimulu-alli/"
+  location: "Dalls,TX, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+

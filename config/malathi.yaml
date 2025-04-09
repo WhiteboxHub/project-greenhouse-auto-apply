@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "malathi"
+  last_name: "kaliappan"
+  email: "malathi.kaliappan11@gmail.com "
+  phone: "925-699-5473"
+  resume: "resume/resume.pdf"  
+  linkedin: "https://www.linkedin.com/in/malathi-kaliappan/"
+  location: "San Francisco, CA, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+

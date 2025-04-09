@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "swathika"
+  last_name: "Kalyanasundaram"
+  email: "Swathika.kalyan0488@gmail.com"
+  phone: "(925) 579-1278"
+  resume: "resume/resume.pdf"  
+  linkedin: "https://www.linkedin.com/in/swathika-kalyanasundaram-2461a2346/"
+  location: "Pleasanton, CA, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+

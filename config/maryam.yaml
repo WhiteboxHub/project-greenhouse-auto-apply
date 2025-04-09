@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "maryam"
+  last_name: "syeda"
+  email: "maryamsyeda.work@gmail.com"
+  phone: "(209) 831-2991"
+  resume: "resume/resume.pdf" 
+  linkedin: "https://www.linkedin.com/in/maryam-syeda-52ab956/"
+  location: "Mountain House, CA, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+

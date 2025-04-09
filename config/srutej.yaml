@@ -1,0 +1,13 @@
+JOB_APP:
+  first_name: "srutej"
+  last_name: "Kodiganti"
+  email: "srutej.kodiganti@gmail.com"
+  phone: "(770) 282-9950"
+  resume: "resume/resume.pdf" 
+  linkedin: "https://www.linkedin.com/in/srutejkodiganti/"
+  location: "Cumming,  GA, USA"
+  school: "MIT"
+  degree: "Bachelor's"
+  work_auth: "Authorized to work for any employer"
+
+
