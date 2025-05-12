@@ -4,6 +4,7 @@ __pycache__
 logs/*.csv
 jobs/*.csv
 /myvenv
+credentials/*.yaml
 
 
 
