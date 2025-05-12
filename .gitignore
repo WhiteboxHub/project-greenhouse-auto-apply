@@ -3,7 +3,7 @@ __pycache__
 
 logs/*.csv
 jobs/*.csv
-
+credentials/*.yaml
 
 
 
