@@ -1,4 +1,3 @@
-
 import os
 import glob
 import time
@@ -13,20 +12,25 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import (
-    NoSuchElementException, TimeoutException,
-    ElementNotInteractableException, StaleElementReferenceException
+    NoSuchElementException,
+    TimeoutException,
+    ElementNotInteractableException,
+    StaleElementReferenceException,
 )
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
-def list_users(credentials_dir="config"):
+
+def list_users(credentials_dir="credentials"):
     yaml_files = glob.glob(os.path.join(credentials_dir, "*.yaml"))
     users = [os.path.splitext(os.path.basename(file))[0] for file in yaml_files]
     return users
 
-def load_user_config(username, credentials_dir="config"):
-    config_file = os.path.join(credentials_dir, f"{username}.yaml")
-    return load_config(config_file)
+
+def load_user_credentials(username, credentials_dir="credentials"):
+    credentials_file = os.path.join(credentials_dir, f"{username}.yaml")
+    return load_credentials(credentials_file)
+
 
 def load_user_resume(username, resume_dir="resume"):
     resume_file = os.path.join(resume_dir, f"{username}.pdf")
@@ -35,21 +39,19 @@ def load_user_resume(username, resume_dir="resume"):
         return None
     return os.path.abspath(resume_file)
 
-def load_config(filename):
+
+def load_credentials(filename):
     if not os.path.exists(filename):
-        print(f"Error: Config file '{filename}' not found!")
+        print(f"Error: credentials file '{filename}' not found!")
         return None
     with open(filename, "r", encoding="utf-8") as file:
-        config = yaml.safe_load(file)
-        if "JOB_APP" not in config:
-            print("Error: 'JOB_APP' section missing in config file.")
-            return None
-        job_app = config["JOB_APP"]
+        credentials = yaml.safe_load(file)
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        job_app["resume"] = os.path.abspath(os.path.join(base_dir, job_app["resume"]))
-        return job_app
+        credentials["resume"] = os.path.abspath(os.path.join(base_dir, credentials["resume"]))
+        return credentials
 
-def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
+
+def load_job_urls(filename="jobs/linkedin_jobs.csv"):
     job_urls = []
     if not os.path.exists(filename):
         print(f"Error: The file '{filename}' was not found.")
@@ -74,10 +76,12 @@ def load_job_urls(filename="jobs/linkedin_jobs_date_time.csv"):
                 print(f"Skipping job with missing data: {row}")
     return job_urls
 
+
 def normalize_text(text):
     return text.strip().lower().replace("*", "").replace(".", "").replace(" ", "")
 
-def load_qa_pairs(filename="config/answers.csv"):
+
+def load_qa_pairs(filename="config/greenhouse_answers.csv"):
     qa_pairs = {}
     if not os.path.exists(filename):
         print(f"Error: The file '{filename}' was not found.")
@@ -92,30 +96,35 @@ def load_qa_pairs(filename="config/answers.csv"):
                 qa_pairs[normalize_text(question)] = answer
     return qa_pairs
 
-def load_locators(filename="locators.json"):
+
+def load_locators(filename="locators/greenhouse_locators.json"):
     if not os.path.exists(filename):
         print(f"Error: Locators file '{filename}' not found!")
         return {}
     with open(filename, "r", encoding="utf-8") as file:
         return json.load(file)
 
+
 def random_sleep(min_time=2, max_time=8):
     sleep_time = random.uniform(min_time, max_time)
     print(f"Sleeping for {round(sleep_time, 2)} seconds")
     time.sleep(sleep_time)
 
+
 def log_result_to_csv(filename, url, status):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(filename, mode='a', newline='', encoding="utf-8") as file:
+    with open(filename, mode="a", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow([url, status, timestamp])
 
+
 def initialize_csv(filename):
-    with open(filename, mode='w', newline='', encoding="utf-8") as file:
+    with open(filename, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.writer(file)
         writer.writerow(["URL", "Status", "Timestamp"])
 
-def apply_greenhouse(driver, url, qa_pairs, locators):
+
+def apply_greenhouse(driver, url, qa_pairs, locators, user_config):
     print(f"\n🔹 Applying to: {url}")
     driver.get(url)
     random_sleep()
@@ -142,7 +151,7 @@ def apply_greenhouse(driver, url, qa_pairs, locators):
             try:
                 field = driver.find_element(By.ID, field_id)
                 field.clear()
-                field.send_keys(JOB_APP[key])
+                field.send_keys(user_config[key])
                 print(f"{key} filled.")
             except NoSuchElementException:
                 print(f"{key} field not found. It might be optional.")
@@ -150,32 +159,40 @@ def apply_greenhouse(driver, url, qa_pairs, locators):
         random_sleep()
 
         try:
-            location_input = driver.find_element(By.ID, locators.get("location_input", ""))
+            location_input = driver.find_element(
+                By.ID, locators.get("location_input", "")
+            )
             location_input.clear()
-            location_input.send_keys(JOB_APP["location"])
+            location_input.send_keys(user_config["location"])
             time.sleep(2)
             location_input.send_keys(Keys.ARROW_DOWN)
             location_input.send_keys(Keys.RETURN)
-            print(f"Location set to {JOB_APP['location']} (dropdown selected)")
+            print(f"Location set to {user_config['location']} (dropdown selected)")
         except NoSuchElementException:
             print("Location input field not found. Skipping.")
 
         random_sleep()
 
         try:
-            resume_input = driver.find_element(By.CSS_SELECTOR, locators.get("resume_input", ""))
+            resume_input = driver.find_element(
+                By.CSS_SELECTOR, locators.get("resume_input", "")
+            )
             driver.execute_script("arguments[0].scrollIntoView();", resume_input)
-            resume_input.send_keys(JOB_APP["resume"])
+            resume_input.send_keys(user_config["resume"])
             print("Resume uploaded.")
         except NoSuchElementException:
             print("Resume upload field not found. Skipping.")
 
         random_sleep()
 
-        text_areas = driver.find_elements(By.CSS_SELECTOR, locators.get("textareas", "textarea"))
+        text_areas = driver.find_elements(
+            By.CSS_SELECTOR, locators.get("textareas", "textarea")
+        )
         for text_area in text_areas:
             try:
-                label = driver.find_element(By.CSS_SELECTOR, f"label[for='{text_area.get_attribute('id')}']")
+                label = driver.find_element(
+                    By.CSS_SELECTOR, f"label[for='{text_area.get_attribute('id')}']"
+                )
                 question_text = label.text.strip()
                 normalized_question = normalize_text(question_text)
                 if normalized_question in qa_pairs:
@@ -186,7 +203,9 @@ def apply_greenhouse(driver, url, qa_pairs, locators):
             except NoSuchElementException:
                 continue
 
-        input_fields = driver.find_elements(By.CSS_SELECTOR, locators.get("input_fields", ""))
+        input_fields = driver.find_elements(
+            By.CSS_SELECTOR, locators.get("input_fields", "")
+        )
         for field in input_fields:
             try:
                 aria_label = field.get_attribute("aria-label")
@@ -212,23 +231,35 @@ def apply_greenhouse(driver, url, qa_pairs, locators):
                 for selector in submit_button_selectors:
                     try:
                         submit_button = driver.find_element(By.CSS_SELECTOR, selector)
-                        driver.execute_script("arguments[0].scrollIntoView();", submit_button)
-                        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, selector)))
+                        driver.execute_script(
+                            "arguments[0].scrollIntoView();", submit_button
+                        )
+                        WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.CSS_SELECTOR, selector))
+                        )
                         submit_button.click()
                         print(f"'Submit' button clicked using selector: {selector}")
                         submit_button_clicked = True
                         break
-                    except (NoSuchElementException, ElementNotInteractableException, StaleElementReferenceException):
+                    except (
+                        NoSuchElementException,
+                        ElementNotInteractableException,
+                        StaleElementReferenceException,
+                    ):
                         continue
                 if not submit_button_clicked:
                     print("No 'Submit' button found.")
                 time.sleep(8)
-                error_elements = driver.find_elements(By.CSS_SELECTOR, locators.get("error_messages", ""))
+                error_elements = driver.find_elements(
+                    By.CSS_SELECTOR, locators.get("error_messages", "")
+                )
                 if not error_elements:
                     print("All required fields filled. Proceeding with submission.")
                     break
                 if wait_time == 0:
-                    print("\nSome required fields are missing! Please fill them manually.")
+                    print(
+                        "\nSome required fields are missing! Please fill them manually."
+                    )
                 random_sleep(15, 30)
                 wait_time += 20
                 if wait_time >= 60:
@@ -255,10 +286,14 @@ def apply_greenhouse(driver, url, qa_pairs, locators):
         print(f"Error while submitting: {e}")
         log_result_to_csv(results_filename, url, "Failed")
 
+
 if __name__ == "__main__":
     users = list_users()
-    user_mapping = {str(i+1): user for i, user in enumerate(users)}
-    print("Available users:", ", ".join([f"{num}-{user}" for num, user in user_mapping.items()]))
+    user_mapping = {str(i + 1): user for i, user in enumerate(users)}
+    print(
+        "Available users:",
+        ", ".join([f"{num}-{user}" for num, user in user_mapping.items()]),
+    )
 
     selected_number = input("Select a user by number: ").strip()
     if selected_number not in user_mapping:
@@ -266,19 +301,21 @@ if __name__ == "__main__":
         exit(1)
 
     selected_user = user_mapping[selected_number]
-    JOB_APP = load_user_config(selected_user)
-    if not JOB_APP:
+    user_config = load_user_credentials(selected_user)
+    if not user_config:
         exit(1)
 
     resume_path = load_user_resume(selected_user)
     if not resume_path:
         exit(1)
-    JOB_APP["resume"] = resume_path
+    user_config["resume"] = resume_path
 
     logs_directory = "logs"
     os.makedirs(logs_directory, exist_ok=True)
     today_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    results_filename = os.path.join(logs_directory, f"job_application_{selected_user}_{today_date}.csv")
+    results_filename = os.path.join(
+        logs_directory, f"job_application_{selected_user}_{today_date}.csv"
+    )
     initialize_csv(results_filename)
 
     job_urls = load_job_urls()
@@ -291,7 +328,7 @@ if __name__ == "__main__":
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service)
         try:
-            apply_greenhouse(driver, job_url, qa_pairs, locators)
+            apply_greenhouse(driver, job_url, qa_pairs, locators, user_config)
         except Exception as e:
             print(f"Error applying to {job_url}: {e}")
             log_result_to_csv(results_filename, job_url, "Failed")
