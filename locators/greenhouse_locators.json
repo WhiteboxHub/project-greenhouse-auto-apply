@@ -1,0 +1,27 @@
+{
+    "apply_buttons": [
+      "//button[contains(text(), 'Apply')]",
+      "//button[contains(text(), 'Apply Now')]",
+      "//a[@id='apply_button']"
+    ],
+    "fields": {
+      "first_name": "first_name",
+      "last_name": "last_name",
+      "email": "email",
+      "phone": "phone",
+      "linkedin": "linkedin",
+      "location": "job_application_location"
+    },
+    "location_input": "candidate-location",
+    "resume_input": "input[type='file']",
+    "textareas": "textarea",
+    "input_fields": "input[type='text'], input[type='email'], input[type='tel'], input[type='url']",
+    "submit_buttons": [
+      "button[type='submit']",
+      "input#submit_app[type='button']",
+      "input[type='button'][value='Submit Application']"
+    ],
+    "error_messages": ".helper-text--error",
+    "confirmation_xpath": "//*[contains(text(), 'Thank you for applying') or contains(text(), 'Application submitted')]"
+  }
+  
